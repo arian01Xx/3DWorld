@@ -11,17 +11,17 @@
     O rotacion de la camara (equivalente)
 
     f -> escala (zoom) define el lente 10
-    d -> camara (distancia) define el punto de vista 5
+    d -> camara (distancia) define el punto de vista 5 y la distancia de la camara
 
     f=200 todo mas grande misma perspectiva
     d=2 vs d=20 cambia como de fuerte es la profundidad
 
     z->profundidad del punto
-    d->donde està la camara
+    d->donde està la camara y la distancia de la misma
     f->cuanto zoom tiene la camara
 
     FORMULA UNICA
-    float d=5;
+    float d=5; //mas cantidad mas plano menos 3d
     float f=10;
 
     z'=z+d
@@ -45,7 +45,8 @@
 constexpr int TILE=5;
 
 struct World{
-    int cell=200;
+    int cell=180;
+    float angle=0.4f;
 
     std::vector<std::vector<int>> world={
         200, std::vector<int>(200,0)
@@ -57,8 +58,8 @@ struct World{
     int col=world[0].size();
 
     sf::Vector2f project(float x, float y, float z){
-        float d=20.0f;
-        float f=200.0f;
+        float d=27.0f; //estaba en 20.0f
+        float f=250.0f; //estaba en 200.0f
 
         z+=d;
 
@@ -73,30 +74,42 @@ struct World{
     }
 
     void drawAxisNumbers(sf::RenderWindow& window, sf::Font& font){
-        int width=window.getSize().x;
+        for(int i=-100; i<=100; i+=10){
 
-        float originX=middle*TILE;
-        float axisY=middle*TILE;
-
-        for(int px=0; px<row*TILE; px+=60){
-            int worldX=(px-originX)/TILE;
+            //EJE X
+            auto rotX=rotated(i,0,0,angle);
+            auto pX=project(rotX[0], rotX[1], rotX[2]);
             
-            sf::Text text(font, "", 12);
-            text.setFillColor(sf::Color::White);
-            text.setString(std::to_string(worldX).substr(0,5));
-            text.setPosition(sf::Vector2f(px, axisY));
+            sf::Text textX(font, "", 12);
+            textX.setFillColor(sf::Color::White);
+            textX.setString(std::to_string(i));
+            textX.setPosition(pX);
 
-            sf::Text text1(font, "", 12);
-            text1.setFillColor(sf::Color::White);
-            text1.setString(std::to_string(-worldX).substr(0,5));
-            text1.setPosition(sf::Vector2f(axisY, px));
+            //EJE Y
+            auto rotY=rotated(0,i,0,angle);
+            auto pY=project(rotY[0], rotY[1], rotY[2]);
 
-            window.draw(text);
-            window.draw(text1);
+            sf::Text textY(font, "", 12);
+            textY.setFillColor(sf::Color::White);
+            textY.setString(std::to_string(i));
+            textY.setPosition(pY);
+            
+            //EJE Z
+            auto rotZ=rotated(0,0,i,angle);
+            auto pZ=project(rotZ[0], rotZ[1], rotZ[2]);
+
+            sf::Text textZ(font, "", 12);
+            textZ.setFillColor(sf::Color::White);
+            textZ.setString(std::to_string(i));
+            textZ.setPosition(pZ);
+
+            window.draw(textX);
+            window.draw(textY);
+            window.draw(textZ);
         }
-    } 
+    }
 
-    std::vector<float> rotatedY(float x, float y, float z, float angle){
+    std::vector<float> rotated(float x, float y, float z, float angle){
         //Y
         float xr=x*std::cos(angle)+z*std::sin(angle);
         float yr=y;
@@ -111,13 +124,12 @@ struct World{
 
     void setLines(sf::VertexArray& line1, sf::VertexArray& line2,
                   sf::VertexArray& line3){
-        float angle=0.2f;
         float step=0.5f;
 
         for(float t=-100; t<=100; t+=step){
             //EJE X
-            auto a=rotatedY(t,0,0,angle);
-            auto b=rotatedY(t+step,0,0,angle);
+            auto a=rotated(t,0,0,angle);
+            auto b=rotated(t+step,0,0,angle);
 
             auto p1=project(a[0], a[1], a[2]);
             auto p2=project(b[0], b[1], b[2]);
@@ -125,11 +137,11 @@ struct World{
             sf::Vertex v1; v1.position=p1; v1.color=sf::Color::Red;
             sf::Vertex v2; v2.position=p2; v2.color=sf::Color::Red;
             line1.append(v1);
-            line1.append(v2);
+            line1.append(v2); 
 
             //EJE Y
-            auto aY=rotatedY(0,t,0,angle);
-            auto bY=rotatedY(0,t+step,0,angle);
+            auto aY=rotated(0,t,0,angle);
+            auto bY=rotated(0,t+step,0,angle);
 
             auto p1Y=project(aY[0], aY[1], aY[2]);
             auto p2Y=project(bY[0], bY[1], bY[2]);
@@ -140,8 +152,8 @@ struct World{
             line2.append(v2Y);
 
             //EJE Z
-            auto aZ=rotatedY(0,0,t,angle);
-            auto bZ=rotatedY(0,0,t+step,angle);
+            auto aZ=rotated(0,0,t,angle);
+            auto bZ=rotated(0,0,t+step,angle);
 
             auto p1Z=project(aZ[0], aZ[1], aZ[2]);
             auto p2Z=project(bZ[0], bZ[1], bZ[2]);
@@ -201,7 +213,7 @@ void execute(){
         window.clear();
 
         w.draw(window);
-        //w.drawAxisNumbers(window, font);
+        w.drawAxisNumbers(window, font);
 
         window.display();
     }
