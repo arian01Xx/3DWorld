@@ -45,7 +45,7 @@ struct World{
     void drawAxisNumbers(sf::RenderWindow& window, sf::Font& font){
         float textScale=0.5f;
 
-        for(int i=-80; i<=80; i+=10){
+        for(int i=-100; i<=100; i+=10){
 
             //EJE X
             auto rotX=rotated(i,0,0);
