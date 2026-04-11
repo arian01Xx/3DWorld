@@ -96,11 +96,73 @@ struct Functions{
          * y(tetha)=y0 + r*cos(theta)*uy + r*sin(tetha)*vy
          * z(tetha)=z0 + r*cos(theta)*uz + r*sin(tetha)*vz
         */
+
+        //PRIMERO UN VECTOR QUE ACUMULE COORDENADA POINTS
+        float r=20.0f;
+        std::vector<sf::Vector2f> points;
+
+        //LUEGO EL RANGO QUE SE DIBUJARÀ CON FOR
+        for(float t=0; t<2*M_PI; t+=0.1f){
+            float x=r*std::cos(t);
+            float y=r*std::sin(t);
+            float z=0;
+
+            auto Rot=w.rotated(x,y,z);
+            auto Proj=w.project(Rot[0], Rot[1], Rot[2]);
+
+            points.push_back(Proj.pos);
+        }
+
+        for(int i=0; i<points.size()-1; i++){
+            sf::Vertex line[2];
+
+            line[0].position=points[i];
+            line[0].color=sf::Color::White;
+
+            line[1].position=points[(i+1)%points.size()];
+            line[1].color=sf::Color::White;
+
+            window.draw(line, 2, sf::PrimitiveType::Lines);
+        }
+    }
+
+    void drawingCircle3D(sf::RenderWindow& window, World& w){
+        float r=30.0f;
+        sf::Vector3f center(10.0f, 20.0f, 10.0f);
+        std::vector<sf::Vector2f> points;
+
+        //los U-V
+        sf::Vector3f u(1.0f, 0.0f, 0.0f);
+        sf::Vector3f v(0.0f, 0.0f, 1.0f);
+
+        for(float t=0; t<2*M_PI; t+=0.1f){
+            float x=center.x+r*std::cos(t)*u.x+std::sin(t)*v.x;
+            float y=center.y+r*std::cos(t)*u.y+std::sin(t)*v.y;
+            float z=center.z+r*std::cos(t)*u.z+std::sin(t)*v.z;
+
+            auto Rot=w.rotated(x,y,z);
+            auto Proj=w.project(Rot[0], Rot[1], Rot[2]);
+
+            points.push_back(Proj.pos);
+        }
+
+        for(int i=0; i<points.size()-1; i++){
+            sf::Vertex line[2];
+
+            line[0].position=points[i];
+            line[0].color=sf::Color::White;
+            
+            line[1].position=points[(i+1)%points.size()];
+            line[1].color=sf::Color::White;
+
+            window.draw(line, 2, sf::PrimitiveType::Lines);
+        }
     }
 
     void drawMotor(sf::RenderWindow& window, World& w){ 
         drawingBox(window, w);
         drawingCircle(window, w);
+        drawingCircle3D(window, w);
         //drawFunction(window); //para el dibujo practico
         //rotateAxeX(window);
         //rotateAxeY(window);
