@@ -4,169 +4,110 @@
 #include <vector>
 #include <cmath>
 
+#include "functions.hpp"
 #include "global.hpp"
 #include "world.hpp"
 
-struct Functions{
-    //falta dibujo de derivacion y de integracion calculo del area
-    //World w;
-    //Functions(World& _w): w(_w) {}
+struct Opcions{ 
+    void Bottom1(sf::RenderWindow& window, sf::Font& font){
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color::Green);
+        op.setPosition(sf::Vector2f(TILE*2, TILE*2));
+        window.draw(op);
 
-    sf::Vector2f drawNode(float x, float y, float z, 
-                  sf::RenderWindow& window, World& w){ 
-        //solo pone un singular punto en el plano cartesiano
-        sf::CircleShape Node(float(TILE-3));
-
-        auto Rot=w.rotated(x,y,z);
-        auto Proj=w.project(Rot[0], Rot[1], Rot[2]);
-
-        Node.setFillColor(sf::Color::White);
-        Node.setPosition(Proj.pos);
-
-        window.draw(Node);
-
-        return Proj.pos;
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Circle 3D");
+        text.setPosition(sf::Vector2f(TILE*3, TILE*3));
+        window.draw(text); 
     }
 
-    void drawEdge(sf::Vector2f& PointX, sf::Vector2f& PointY, 
-                  sf::RenderWindow& window, World& w){
-        sf::VertexArray line(sf::PrimitiveType::Lines);
-        sf::Vertex Start; 
-        sf::Vertex End;
-        
-        Start.position=PointX;
-        Start.color=sf::Color::Red;
+    void Bottom2(sf::RenderWindow& window, sf::Font& font){
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color::Blue);
+        op.setPosition(sf::Vector2f(TILE*2, TILE*14));
+        window.draw(op);
 
-        End.position=PointY;
-        End.color=sf::Color::Green;
-
-        line.append(Start);
-        line.append(End);
-
-        window.draw(line);
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Square 3D");
+        text.setPosition(sf::Vector2f(TILE*3, TILE*14));
+        window.draw(text);
     }
 
-    void drawingBox(sf::RenderWindow& window, World& w){
-        //DIBUJANDO UN CUADRADO:
-        //PRIMERO DIBUJAR COORDENADAS DE CADA NODO
-        //TECHO SUPERIOR
-        float x1=10.0f, y1=10.0f, z1=10.0f;
-        float x2=10.0f, y2=10.0f, z2=-10.0f;
-        float x3=-10.0f, y3=10.0f, z3=-10.0f;
-        float x4=-10.0f, y4=10.0f, z4=10.0f;
-        sf::Vector2f Point1=drawNode(x1,y1,z1,window,w); //funciones escalables
-        sf::Vector2f Point2=drawNode(x2,y2,z2,window,w);
-        sf::Vector2f Point3=drawNode(x3,y3,z3,window,w);
-        sf::Vector2f Point4=drawNode(x4,y4,z4,window,w);
+    void BottomRotX(sf::RenderWindow& window, sf::Font& font){
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color::Red);
+        op.setPosition(sf::Vector2f(TILE*2, TILE*26));
+        window.draw(op);
 
-        //BASE INFERIOR
-        float x11=10.0f, y11=0.0f, z11=10.0f;
-        float x22=10.0f, y22=0.0f, z22=-10.0f;
-        float x33=-10.0f, y33=0.0f, z33=-10.0f;
-        float x44=-10.0f, y44=0.0f, z44=10.0f;
-
-        sf::Vector2f Point11=drawNode(x11,y11,z11,window,w);
-        sf::Vector2f Point22=drawNode(x22,y22,z22,window,w);
-        sf::Vector2f Point33=drawNode(x33,y33,z33,window,w);
-        sf::Vector2f Point44=drawNode(x44,y44,z44,window,w);
-        
-        //LUEGO UNIR NODOS CON ARISTAS
-        drawEdge(Point1, Point2, window, w); //De nodo a nodo
-        drawEdge(Point2, Point3, window, w);
-        drawEdge(Point3, Point4, window, w);
-        drawEdge(Point4, Point1, window, w);
-
-        drawEdge(Point11, Point22, window, w);
-        drawEdge(Point22, Point33, window, w);
-        drawEdge(Point33, Point44, window, w);
-        drawEdge(Point44, Point11, window, w);
-
-        drawEdge(Point11, Point1, window, w); //De nodo a nodo
-        drawEdge(Point22, Point2, window, w);
-        drawEdge(Point33, Point3, window, w);
-        drawEdge(Point44, Point4, window, w);
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Rotate in\n X");
+        text.setPosition(sf::Vector2f(TILE*3, TILE*26));
+        window.draw(text);
     }
 
-    void drawingCircle(sf::RenderWindow& window, World& w){
-        /*TEORIA FUNCION DE UN CIRCULO EN 3 EJES XYZ=
-         * se parametrizan las coordenadas x,y,z en funcion de un
-         * angulo theta (0<theta<2pi) definido por un centro (x0,y0,z0),
-         * radio r y vectores normales a su plano.
-         * x(tetha)=x0 + r*cos(theta)*ux + r*sin(tetha)*vx
-         * y(tetha)=y0 + r*cos(theta)*uy + r*sin(tetha)*vy
-         * z(tetha)=z0 + r*cos(theta)*uz + r*sin(tetha)*vz
-        */
+    void BottomRotY(sf::RenderWindow& window, sf::Font& font){
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color::Cyan);
+        op.setPosition(sf::Vector2f(TILE*2, TILE*38));
+        window.draw(op);
 
-        //PRIMERO UN VECTOR QUE ACUMULE COORDENADA POINTS
-        float r=20.0f;
-        std::vector<sf::Vector2f> points;
-
-        //LUEGO EL RANGO QUE SE DIBUJARÀ CON FOR
-        for(float t=0; t<2*M_PI; t+=0.1f){
-            float x=r*std::cos(t);
-            float y=r*std::sin(t);
-            float z=0;
-
-            auto Rot=w.rotated(x,y,z);
-            auto Proj=w.project(Rot[0], Rot[1], Rot[2]);
-
-            points.push_back(Proj.pos);
-        }
-
-        for(int i=0; i<points.size()-1; i++){
-            sf::Vertex line[2];
-
-            line[0].position=points[i];
-            line[0].color=sf::Color::White;
-
-            line[1].position=points[(i+1)%points.size()];
-            line[1].color=sf::Color::White;
-
-            window.draw(line, 2, sf::PrimitiveType::Lines);
-        }
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Rotate in\n Y");
+        text.setPosition(sf::Vector2f(TILE*3, TILE*38));
+        window.draw(text);
     }
 
-    void drawingCircle3D(sf::RenderWindow& window, World& w){
-        float r=30.0f;
-        sf::Vector3f center(10.0f, 20.0f, 10.0f);
-        std::vector<sf::Vector2f> points;
+    void BottomRotZ(sf::RenderWindow& window, sf::Font& font){
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color::Yellow);
+        op.setPosition(sf::Vector2f(TILE*2, TILE*50));
+        window.draw(op);
 
-        //los U-V
-        sf::Vector3f u(1.0f, 0.0f, 0.0f);
-        sf::Vector3f v(0.0f, 0.0f, 1.0f);
-
-        for(float t=0; t<2*M_PI; t+=0.1f){
-            float x=center.x+r*std::cos(t)*u.x+std::sin(t)*v.x;
-            float y=center.y+r*std::cos(t)*u.y+std::sin(t)*v.y;
-            float z=center.z+r*std::cos(t)*u.z+std::sin(t)*v.z;
-
-            auto Rot=w.rotated(x,y,z);
-            auto Proj=w.project(Rot[0], Rot[1], Rot[2]);
-
-            points.push_back(Proj.pos);
-        }
-
-        for(int i=0; i<points.size()-1; i++){
-            sf::Vertex line[2];
-
-            line[0].position=points[i];
-            line[0].color=sf::Color::White;
-            
-            line[1].position=points[(i+1)%points.size()];
-            line[1].color=sf::Color::White;
-
-            window.draw(line, 2, sf::PrimitiveType::Lines);
-        }
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Rotate in\n Z");
+        text.setPosition(sf::Vector2f(TILE*3, TILE*50));
+        window.draw(text);
     }
 
-    void drawMotor(sf::RenderWindow& window, World& w){ 
-        drawingBox(window, w);
-        drawingCircle(window, w);
-        drawingCircle3D(window, w);
-        //drawFunction(window); //para el dibujo practico
-        //rotateAxeX(window);
-        //rotateAxeY(window);
-        //rotateAxeZ(window);
+    void BottomFunctions(sf::RenderWindow& window, sf::Font& font){
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color(128,0,128));
+        op.setPosition(sf::Vector2f(TILE*24, TILE*2));
+        window.draw(op);
+
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Functions");
+        text.setPosition(sf::Vector2f(TILE*25, TILE*3));
+        window.draw(text);
+    }
+
+    void BottomDerivate(sf::RenderWindow& window, sf::Font& font){
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color::Magenta);
+        op.setPosition(sf::Vector2f(TILE*46, TILE*2));
+        window.draw(op);
+
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Rotate in\n Z");
+        text.setPosition(sf::Vector2f(TILE*47, TILE*3));
+        window.draw(text);
+    }
+
+    void drawingOpcions(sf::RenderWindow& window, sf::Font& font){
+        Bottom1(window, font);
+        Bottom2(window, font);
+        BottomRotX(window, font);
+        BottomRotY(window, font);
+        BottomRotZ(window, font);
+        BottomFunctions(window, font); //està ira al costado del primero a la derecha
+        BottomDerivate(window, font); //la derivada se dibujarà encima de la funcion
     }
 };
 
@@ -175,6 +116,7 @@ void execute(){
     sf::Vector2i lastMouse;
 
     World w;
+    Opcions o;
     Functions f;
 
     sf::RenderWindow window{
@@ -184,7 +126,7 @@ void execute(){
         }), "MOTOR 3D" 
     };
 
-    window.setFramerateLimit(30);
+    window.setFramerateLimit(60);
 
     sf::Font font;
     if(!font.openFromFile("arial.ttf")) std::cerr<<"No se pudo cargar el archivo\n";
@@ -218,6 +160,7 @@ void execute(){
         window.clear();
 
         w.draw(window);
+        o.drawingOpcions(window, font);
         w.drawAxisNumbers(window, font);
         f.drawMotor(window, w);
 
