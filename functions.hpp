@@ -187,11 +187,21 @@ struct Functions{
         }
     }
 
+    /*HAY DOS MODALIDADES PARA DIBUJAR
+     dibujar curvas y dibujar superficies
+     
+     curvas:
+     P(t)=(x(t), y(t), z(t))
+
+     superficies:
+     S(u,v)=(x(u,v), y(u,v), z(u,v))
+     */
+
     void drawMotor(sf::RenderWindow& window, World& w){
         //ESTOS DIBUJOS DEBEN SER SELECCIONADOS MEDIANTE CAJAS DE OPCIONES
-        //drawingBox(window, w); //HECHO
-        drawingCircle(window, w); //HECHO
-        drawingCircle3D(window, w);
+        drawingBox(window, w); //HECHO
+        drawingCircle(window, w); //HECHO dibujo de curva
+        drawingCircle3D(window, w); //HECHO dibujo de superficie
 
         //drawFunction(window); //para el dibujo practico
         //rotateAxeX(window);
