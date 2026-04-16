@@ -11,8 +11,8 @@
 
 struct Bottom{
     std::pair<int,int> pos;
-    int weight=20;
-    int height=10;
+    int weight=TILE*20;
+    int height=TILE*10;
 };
 
 struct Opcions{ 
@@ -136,6 +136,23 @@ struct Opcions{
         text.setPosition(sf::Vector2f(TILE*47, TILE*3));
         window.draw(text);
     }
+    
+    void BottomCircle2D(sf::RenderWindow& window, sf::Font& font){
+        Bottom bot8;
+        sf::RectangleShape op(sf::Vector2f(TILE*20, TILE*10)); //COLUMNA, FILA
+        op.setFillColor(sf::Color::Cyan);
+        op.setPosition(sf::Vector2f(TILE*68, TILE*2));
+        window.draw(op);
+
+        bot8.pos={TILE*68, TILE*2};
+        bottom.push_back(bot8);
+
+        sf::Text text(font, "", 15);
+        text.setFillColor(sf::Color::Black);
+        text.setString("Circle 2D");
+        text.setPosition(sf::Vector2f(TILE*69, TILE*3));
+        window.draw(text);
+    }
 
     void drawingOpcions(sf::RenderWindow& window, sf::Font& font){
         Bottom1(window, font);
@@ -145,9 +162,10 @@ struct Opcions{
         BottomRotZ(window, font);
         BottomFunctions(window, font); //està ira al costado del primero a la derecha
         BottomDerivate(window, font); //la derivada se dibujarà encima de la funcion
+        BottomCircle2D(window, font);
     }
 
-    bool verify(Bottom& bot, int& col, int& row){
+    bool verify(Bottom& bot, int& row, int& col){
         return(
             col>=bot.pos.first && col<=bot.pos.first+bot.weight &&
             row>=bot.pos.second && row<=bot.pos.second+bot.height
@@ -194,9 +212,14 @@ void execute(){
                 int col=mouseButtonPressed->position.x;
                 int row=mouseButtonPressed->position.y;
 
-                if(o.verify(o.bottom[0], col, row)){
-
-                }
+                if(o.verify(o.bottom[0], row, col)) f.selec=f.SELECTED::drawCircle3D;
+                if(o.verify(o.bottom[1], row, col)) f.selec=f.SELECTED::drawBox3D;
+                if(o.verify(o.bottom[2], col, row)) f.selec=f.SELECTED::rotateX;
+                if(o.verify(o.bottom[3], col, row)) f.selec=f.SELECTED::rotateY;
+                if(o.verify(o.bottom[4], col, row)) f.selec=f.SELECTED::rotateZ;
+                if(o.verify(o.bottom[5], col, row)) f.selec=f.SELECTED::functions;
+                if(o.verify(o.bottom[6], col, row)) f.selec=f.SELECTED::derivate;
+                if(o.verify(o.bottom[7], col, row)) f.selec=f.SELECTED::drawCircle2D;
             }
         }
 

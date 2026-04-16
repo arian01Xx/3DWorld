@@ -45,6 +45,17 @@ struct Functions{
     //falta dibujo de derivacion y de integracion calculo del area
     //World w;
     //Functions(World& _w): w(_w) {}
+    float angle=0.0f;
+
+    bool rotX=false;
+    bool rotY=false;
+    bool rotZ=false;
+
+    enum SELECTED{
+        drawCircle3D, drawBox3D, rotateX, rotateY, rotateZ, functions, derivate, drawCircle2D
+    };
+
+    SELECTED selec=drawBox3D;
 
     sf::Vector2f drawNode(float x, float y, float z, 
                   sf::RenderWindow& window, World& w){ 
@@ -121,7 +132,7 @@ struct Functions{
         drawEdge(Point44, Point4, window, w);
     }
 
-    void drawingCircle(sf::RenderWindow& window, World& w){
+    void drawingCircle2D(sf::RenderWindow& window, World& w){
         /*TEORIA FUNCION DE UN CIRCULO EN 3 EJES XYZ=
          * se parametrizan las coordenadas x,y,z en funcion de un
          * angulo theta (0<theta<2pi) definido por un centro (x0,y0,z0),
@@ -197,16 +208,50 @@ struct Functions{
      S(u,v)=(x(u,v), y(u,v), z(u,v))
      */
 
-    void drawMotor(sf::RenderWindow& window, World& w){
-        //ESTOS DIBUJOS DEBEN SER SELECCIONADOS MEDIANTE CAJAS DE OPCIONES
-        drawingBox(window, w); //HECHO
-        drawingCircle(window, w); //HECHO dibujo de curva
-        drawingCircle3D(window, w); //HECHO dibujo de superficie
+    void rotX_Axis(float& x, float& y, float& z, float& angle){
+        float yr=y*std::cos(angle)-z*std::sin(angle);
+        float zr=y*std::sin(angle)+z*std::cos(angle);
+        y=yr;
+        z=zr;
+    }
 
+    void rotY_Axis(float& x, float& y, float& z, float& angle){
+        float xr=x*std::cos(angle)+z*std::sin(angle);
+        float zr=z*std::cos(angle)-x*std::sin(angle);
+        x=xr;
+        z=zr;
+    }
+
+    void rotZ_Axis(float& x, float& y, float& z, float& angle){
+        float xr=x*std::cos(angle)-y*std::sin(angle);
+        float yr=x*std::sin(angle)+y*std::cos(angle);
+        x=xr;
+        y=yr;
+    }
+
+    void drawMotor(sf::RenderWindow& window, World& w){
+        if(rotX || rotY || rotZ) angle+=0.01f;
+
+        //ESTOS DIBUJOS DEBEN SER SELECCIONADOS MEDIANTE CAJAS DE OPCIONES
+        if(selec==SELECTED::drawCircle3D){
+            angle=0.0f;
+            rotX=false; rotY=false; rotZ=false;
+            drawingCircle3D(window, w); //dibujo superficie;
+        }
+        if(selec==SELECTED::drawBox3D){
+            angle=0.0f;
+            rotX=false; rotY=false; rotZ=false;
+            drawingBox(window, w);
+        }
+        if(selec==SELECTED::drawCircle2D){
+            angle=0.0f;
+            rotX=false; rotY=false; rotZ=false;
+            drawingCircle2D(window, w); //dibujo curva
+        } 
+        if(selec==SELECTED::rotateX){ rotX=true; rotY=false; rotZ=false; }
+        if(selec==SELECTED::rotateY){ rotX=false; rotY=true; rotZ=false; }
+        if(selec==SELECTED::rotateZ){ rotX=false; rotY=false; rotZ=true; }
         //drawFunction(window); //para el dibujo practico
-        //rotateAxeX(window);
-        //rotateAxeY(window);
-        //rotateAxeZ(window);
     }
 };
 
