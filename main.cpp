@@ -17,6 +17,7 @@ struct Bottom{
 
 struct Opcions{ 
     std::vector<Bottom> bottom;
+    int currentRotationMode=0; //0:libre, 1:X, 2:Y, 3:Z
 
     void Bottom1(sf::RenderWindow& window, sf::Font& font){
         Bottom bot1;
@@ -154,6 +155,10 @@ struct Opcions{
         window.draw(text);
     }
 
+    void resetRotationMode(){
+        currentRotationMode=0;
+    }
+
     void drawingOpcions(sf::RenderWindow& window, sf::Font& font){
         Bottom1(window, font);
         Bottom2(window, font);
@@ -193,6 +198,8 @@ void execute(){
     sf::Font font;
     if(!font.openFromFile("arial.ttf")) std::cerr<<"No se pudo cargar el archivo\n";
 
+    //o.drawingOpcions(window, font);
+
     while(window.isOpen()){
         while(const std::optional event=window.pollEvent()){
             if(event->is<sf::Event::Closed>()) window.close();
@@ -212,14 +219,38 @@ void execute(){
                 int col=mouseButtonPressed->position.x;
                 int row=mouseButtonPressed->position.y;
 
-                if(o.verify(o.bottom[0], row, col)) f.selec=f.SELECTED::drawCircle3D;
-                if(o.verify(o.bottom[1], row, col)) f.selec=f.SELECTED::drawBox3D;
-                if(o.verify(o.bottom[2], col, row)) f.selec=f.SELECTED::rotateX;
-                if(o.verify(o.bottom[3], col, row)) f.selec=f.SELECTED::rotateY;
-                if(o.verify(o.bottom[4], col, row)) f.selec=f.SELECTED::rotateZ;
-                if(o.verify(o.bottom[5], col, row)) f.selec=f.SELECTED::functions;
-                if(o.verify(o.bottom[6], col, row)) f.selec=f.SELECTED::derivate;
-                if(o.verify(o.bottom[7], col, row)) f.selec=f.SELECTED::drawCircle2D;
+                if(o.verify(o.bottom[0], row, col)){
+                    f.selec=f.SELECTED::drawCircle3D;
+                    o.resetRotationMode();
+                }
+                if(o.verify(o.bottom[1], row, col)){
+                    f.selec=f.SELECTED::drawBox3D;
+                    o.resetRotationMode();
+                }
+                if(o.verify(o.bottom[2], row, col)){
+                    f.selec=f.SELECTED::rotateX;
+                    o.currentRotationMode=1;
+                }
+                if(o.verify(o.bottom[3], row, col)){
+                    f.selec=f.SELECTED::rotateY;
+                    o.currentRotationMode=2;
+                }
+                if(o.verify(o.bottom[4], row, col)){
+                    f.selec=f.SELECTED::rotateZ;
+                    o.currentRotationMode=3;
+                }
+                if(o.verify(o.bottom[5], row, col)){
+                    f.selec=f.SELECTED::functions;
+                    o.resetRotationMode();
+                }
+                if(o.verify(o.bottom[6], row, col)){
+                    f.selec=f.SELECTED::derivate;
+                    o.resetRotationMode();
+                }
+                if(o.verify(o.bottom[7], row, col)){
+                    f.selec=f.SELECTED::drawCircle2D;
+                    o.resetRotationMode();
+                }
             }
         }
 
@@ -227,8 +258,22 @@ void execute(){
             sf::Vector2i current=sf::Mouse::getPosition(window);
             sf::Vector2i delta=current-lastMouse;
 
-            w.angleY+=delta.x * 0.005f;
-            w.angleX+=delta.y * 0.005f;
+            switch(o.currentRotationMode){
+                case 1:
+                    w.angleX+=delta.y*0.005f;
+                    break;
+                case 2:
+                    w.angleY+=delta.x*0.005f;
+                    break;
+                case 3:
+                    w.angleZ+=delta.x*0.005f;
+                    break;
+                default:
+                    //modo libre tal cual el estado anterior
+                    w.angleY+=delta.x*0.005f;
+                    w.angleX+=delta.y*0.005f;
+                    break;
+            }
 
             lastMouse=current;
         }
@@ -236,6 +281,7 @@ void execute(){
         window.clear();
 
         w.draw(window);
+        o.bottom.clear();
         o.drawingOpcions(window, font);
         w.drawAxisNumbers(window, font);
         f.drawMotor(window, w);

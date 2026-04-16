@@ -19,6 +19,7 @@ struct World{
 
     float angleX=0.3f;
     float angleY=0.4f;
+    float angleZ=0.0f;
 
     std::vector<std::vector<int>> world={
         200, std::vector<int>(500,0)
@@ -92,8 +93,14 @@ struct World{
         //X
         float yr2=yr*std::cos(angleX)-zr*std::sin(angleX);
         float zr2=yr*std::sin(angleX)+zr*std::cos(angleX);
+        float xr2=xr;
 
-        return {xr, yr2, zr2};
+        //Z
+        float xr3=xr2*std::cos(angleZ)-yr2*std::sin(angleZ);
+        float yr3=xr2*std::sin(angleZ)+yr2*std::cos(angleZ);
+        float zr3=zr2;
+
+        return {xr3, yr3, zr3};
     } 
 
     void setLines(sf::VertexArray& line1, sf::VertexArray& line2,

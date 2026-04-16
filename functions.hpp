@@ -45,7 +45,7 @@ struct Functions{
     //falta dibujo de derivacion y de integracion calculo del area
     //World w;
     //Functions(World& _w): w(_w) {}
-    float angle=0.0f;
+    //float angle=0.0f;
 
     bool rotX=false;
     bool rotY=false;
@@ -56,6 +56,10 @@ struct Functions{
     };
 
     SELECTED selec=drawBox3D;
+
+    enum Mode{
+        NONE, ROT_X, ROT_Y, ROT_Z
+    };
 
     sf::Vector2f drawNode(float x, float y, float z, 
                   sf::RenderWindow& window, World& w){ 
@@ -229,28 +233,24 @@ struct Functions{
         y=yr;
     }
 
-    void drawMotor(sf::RenderWindow& window, World& w){
-        if(rotX || rotY || rotZ) angle+=0.01f;
-
+    void drawMotor(sf::RenderWindow& window, World& w){ 
         //ESTOS DIBUJOS DEBEN SER SELECCIONADOS MEDIANTE CAJAS DE OPCIONES
-        if(selec==SELECTED::drawCircle3D){
-            angle=0.0f;
-            rotX=false; rotY=false; rotZ=false;
-            drawingCircle3D(window, w); //dibujo superficie;
-        }
-        if(selec==SELECTED::drawBox3D){
-            angle=0.0f;
-            rotX=false; rotY=false; rotZ=false;
+        switch(selec){
+        case SELECTED::drawCircle3D:
+            drawingCircle3D(window, w);
+            break;
+
+        case SELECTED::drawBox3D:
             drawingBox(window, w);
-        }
-        if(selec==SELECTED::drawCircle2D){
-            angle=0.0f;
-            rotX=false; rotY=false; rotZ=false;
-            drawingCircle2D(window, w); //dibujo curva
-        } 
-        if(selec==SELECTED::rotateX){ rotX=true; rotY=false; rotZ=false; }
-        if(selec==SELECTED::rotateY){ rotX=false; rotY=true; rotZ=false; }
-        if(selec==SELECTED::rotateZ){ rotX=false; rotY=false; rotZ=true; }
+            break;
+
+        case SELECTED::drawCircle2D:
+            drawingCircle2D(window, w);
+            break;
+
+        default:
+            break;
+    }
         //drawFunction(window); //para el dibujo practico
     }
 };
